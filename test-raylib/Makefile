@@ -6,7 +6,7 @@ CC = gcc
 
 LFLAGS = -L$(RAYLIB_PATH)
 
-LIBS = -lraylib
+LIBS = -lraylib -lm
 
 # OBJS = $(SRCS:.c=.o)
 

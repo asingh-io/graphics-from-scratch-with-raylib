@@ -1,0 +1,11 @@
+inotifywait -q -m -r -e modify ./ | while read DIRECTORY EVENT FILE; do
+    case $EVENT in
+        MODIFY*)
+            if [ $FILE == test-raylib.c ]; then 
+                killall test-raylib
+                make 
+                ./run.sh
+            fi
+            ;;
+    esac
+done
