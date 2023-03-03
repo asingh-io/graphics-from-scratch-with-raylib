@@ -39,10 +39,8 @@ void draw_line(Point *p0, Point *p1, Color c)
 	}
 	float a = ((p1->y - p0->y) / (p1->x - p0->x));
 	float y = p0->y;
-	//float b = p0->y - (a * p0->x);
 	for (int x = p0->x; x <= p1->x; x++)
 	{
-	//	float y = (a * x) + b;
 		PutPixel((int)x, (int)y, c);
 		y = y + a;
 	}
@@ -110,23 +108,18 @@ void draw_line3(Point *p0, Point *p1, Color c)
 			swap(p0, p1);
 		}
 		int len = interpolate(p0->x, p0->y, p1->x, p1->y, xValues);
-		//float a = dy / dx;
-		//float y = p0->y;
 		for (int x = p0->x; x <= p1->x; x++)
 		{
 			if (len > 1)
 				PutPixel((int)x, (int)xValues[(int)(x - p0->x)], c);
 			else 
 				PutPixel((int)x, (int)xValues[0], c);
-			//y = y + a;
 		}
 	} else {
 		// Line is vertical-ish
 		if (p0->y > p1->y) {
 			swap(p0, p1);
 		}
-		//float a = dx / dy;
-		//float x = p0->x;
 		int len = interpolate(p0->y, p0->x, p1->y, p1->x, yValues);
 		for (int y = p0->y; y <= p1->y; y++)
 		{
@@ -134,11 +127,14 @@ void draw_line3(Point *p0, Point *p1, Color c)
 				PutPixel((int)xValues[(int)(y - p0->y)], (int)y, c);
 			else 
 				PutPixel((int)xValues[0], (int)y, c);
-			//x = x + a;
 		}
 	}
 }
 
+//------------------------------------------------------------------------------------------
+// Types and Structures Definition
+//------------------------------------------------------------------------------------------
+typedef enum Screen { LOGO = 0, SCREEN_1, SCREEN_2, SCREEN_3, SCREEN_4, ENDING } Screen;
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -149,40 +145,124 @@ int main(void)
     //--------------------------------------------------------------------------------------
     InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
 
+    Screen currentScreen = LOGO;
+
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
 
     // Main game loop
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
-        // Update
+	// Update
         //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
+        switch(currentScreen)
+        {
+            case LOGO:
+            {
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = SCREEN_1;
+                }
+            }
+            break;
+	    case SCREEN_1:
+            {
+                // Press enter to change to screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = SCREEN_2;
+                }
+            } break;
+            case SCREEN_2:
+            {
+                // Press enter to change to screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = SCREEN_3;
+                }
+            } break;
+            case SCREEN_3:
+            {
+                // Press enter to change to screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = SCREEN_4;
+                }
+            } break;
+            case SCREEN_4:
+            {
+                // Press enter to change to screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = ENDING;
+                }
+            } break;
+
+            case ENDING:
+            {
+                // Press enter to return to TITLE screen
+                if (IsKeyPressed(KEY_ENTER) || IsGestureDetected(GESTURE_TAP))
+                {
+                    currentScreen = SCREEN_1;
+                }
+            } break;
+            default: break;
+        }
 
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
 
             ClearBackground(RAYWHITE);
-	    Point p0 = {-200, -100};
-	    Point p1 = {240, 120};
-	    draw_line3(&p0, &p1, BLACK);
-	    
-	    Point p2 = {-50, -200};
-	    Point p3 = {60, 240};
-	    draw_line3(&p2, &p3, BLACK);
-	   /* 
-	   /* 
-	    for ( int x = -240; x <240; x++){
-		    for ( int y = -100; y<120; y++) {
-			    PutPixel(x,y, BLACK);
-		    }
-	    }
-	    */
+ 	switch(currentScreen)
+            {
+                case LOGO:
+                {
+                    // TODO: Draw LOGO screen here!
+                    DrawText("PRESS ENTER or TAP to JUMP to SCREEN", 120, 220, 20, DARKGREEN);
 
-//            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+                } break;
+                case SCREEN_1:
+                {
+			Point p0 = {-200, -100};
+	    		Point p1 = {240, 120};
+	    		draw_line(&p0, &p1, BLACK);
+                } break;
+                case SCREEN_2:
+                {
+			Point p0 = {-50, -200};
+	    		Point p1 = {60, 240};
+	    		draw_line(&p0, &p1, BLACK);
+                } break;
+		case SCREEN_3:
+                {
+			Point p0 = {-200, -100};
+	    		Point p1 = {240, 120};
+	    		draw_line2(&p0, &p1, BLACK);
+		    	Point p2 = {-50, -200};
+		    	Point p3 = {60, 240};
+		    	draw_line2(&p2, &p3, BLACK);
+                }
+		break;
+		case SCREEN_4:
+                {
+			Point p0 = {-200, -100};
+	    		Point p1 = {240, 120};
+	    		draw_line3(&p0, &p1, BLACK);
+		    	Point p2 = {-50, -200};
+		    	Point p3 = {60, 240};
+		    	draw_line3(&p2, &p3, BLACK);
+                } break;
+  break;
+                case ENDING:
+                {
+                    // TODO: Draw ENDING screen here!
+                    DrawText("PRESS ENTER or TAP to RETURN to TITLE SCREEN", 120, 220, 20, DARKBLUE);
 
+                } break;
+                default: break;
+            }
+	
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
