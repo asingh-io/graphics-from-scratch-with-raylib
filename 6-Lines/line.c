@@ -112,7 +112,7 @@ void draw_line3(Point *p0, Point *p1, Color c)
 		{
 			if (len > 1)
 				PutPixel((int)x, (int)xValues[(int)(x - p0->x)], c);
-			else 
+			else
 				PutPixel((int)x, (int)xValues[0], c);
 		}
 	} else {
@@ -124,8 +124,8 @@ void draw_line3(Point *p0, Point *p1, Color c)
 		for (int y = p0->y; y <= p1->y; y++)
 		{
 			if (len > 1)
-				PutPixel((int)xValues[(int)(y - p0->y)], (int)y, c);
-			else 
+				PutPixel((int)yValues[(int)(y - p0->y)], (int)y, c);
+			else
 				PutPixel((int)xValues[0], (int)y, c);
 		}
 	}
@@ -262,7 +262,7 @@ int main(void)
                 } break;
                 default: break;
             }
-	
+
         EndDrawing();
         //----------------------------------------------------------------------------------
     }
