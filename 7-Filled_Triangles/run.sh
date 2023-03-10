@@ -1,5 +1,1 @@
-#!/bin/sh
-#
-rm -f triangle 
-gcc triangle.c -o triangle -lraylib
-./triangle
+LD_LIBRARY_PATH=../raylib/src ./triangle &

@@ -133,49 +133,71 @@ void draw_line3(Point *p0, Point *p1, Color c)
 			swap(p0, p1);
 		}
 		int len = interpolate(p0->x, p0->y, p1->x, p1->y, xValues);
-		printf("len %d\n", len);
-		for (int k=0; k<20; k++)
-		{
-			//printf("%f ", xValues[k]);
-		}
-		printf("\n");
-		//float a = dy / dx;
-		//float y = p0->y;
 		for (int x = p0->x; x <= p1->x; x++)
 		{
-			//printf("%f ", xValues[(int)(x - p0->x)]);
-			//exit(0);
 			if (len > 1)
 				PutPixel((int)x, (int)xValues[((int)x - (int)p0->x)], c);
-			else 
+			else
 				PutPixel((int)x, (int)xValues[0], c);
-			//y = y + a;
 		}
 	} else {
 		// Line is vertical-ish
 		if (dy < 0) {
 			swap(p0, p1);
 		}
-		//float a = dx / dy;
-		//float x = p0->x;
 		int len = interpolate(p0->y, p0->x, p1->y, p1->x, yValues);
+
 		for (int y = p0->y; y <= p1->y; y++)
 		{
 			if (len > 1)
-				PutPixel((int)xValues[((int)y - (int)p0->y)], (int)y, c);
-			else 
-				PutPixel((int)xValues[0], (int)y, c);
-			//x = x + a;
+				PutPixel((int)yValues[((int)y - (int)p0->y)], (int)y, c);
+			else
+				PutPixel((int)yValues[0], (int)y, c);
 		}
 	}
 }
 
-void DrawWireframeTriangle(Point *p0, Point *p1, Point *p2)
+void DrawWireframeTriangle(Point *p0, Point *p1, Point *p2, Color c)
 {
-	draw_line3(p0, p1, BLACK);
-	draw_line3(p1, p2, BLACK);
-	draw_line3(p2, p0, BLACK);
+	draw_line3(p0, p1, c);
+	draw_line3(p1, p2, c);
+	draw_line3(p2, p0, c);
 }
+
+
+void DrawFilledTriangle(Point *p0, Point *p1, Point *p2, Color c) {
+  // Sort the points from bottom to top.
+  if (p1->y < p0->y) { swap(p0, p1); };
+  if (p2->y < p0->y) { swap(p0, p2); };
+  if (p2->y < p1->y) { swap(p1, p2); };
+  float x01[screenWidth+screenWidth];
+  float x02[screenWidth];
+
+  // Compute X coordinates of the edges.
+  int len_x01 = interpolate(p0->y, p0->x, p1->y, p1->x, x01);
+  // merge with theprevious x01 array
+  int len_x12 = interpolate(p1->y, p1->x, p2->y, p2->x, &x01[len_x01-2]);
+  int len_x02 = interpolate(p0->y, p0->x, p2->y, p2->x, x02);
+
+  // Determine which is left and which is right.
+  float *x_left, *x_right;
+  int m = (len_x02/2) | 0;
+  if (x02[m] < x01[m]) {
+    x_left = &x02;
+    x_right = &x01;
+  } else {
+    x_left = &x01;
+    x_right = &x02;
+  }
+
+  // Draw horizontal segments.
+  for (int y = p0->y; y <= p2->y; y++) {
+    for (int x = x_left[(int)y - (int)p0->y]; x <= x_right[(int)y - (int)p0->y]; x++) {
+      PutPixel(x, y, c);
+    }
+  }
+}
+
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -184,7 +206,7 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    InitWindow(screenWidth, screenHeight, "raylib [core] example - basic window");
+    InitWindow(screenWidth, screenHeight, "raylib Triangle");
 
     SetTargetFPS(60);               // Set our game to run at 60 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -193,46 +215,17 @@ int main(void)
     while (!WindowShouldClose())    // Detect window close button or ESC key
     {
         // Update
-        //----------------------------------------------------------------------------------
-        // TODO: Update your variables here
-        //----------------------------------------------------------------------------------
 
         // Draw
         //----------------------------------------------------------------------------------
         BeginDrawing();
         ClearBackground(RAYWHITE);
-#if 1
-	Point p0 = {-200, -250};
+	    Point p0 = {-200, -250};
         Point p1 = {200, 50};
         Point p2 = {20, 250};
-	//draw_line3(&p0, &p1, BLACK);
-//	DrawWireframeTriangle(&p0, &p1, &p2);
-	//draw_line2(&p0, &p1, BLACK);
-	//draw_line3(&p0, &p1, BLACK);
-	draw_line2(&p1, &p2, BLACK);
-	draw_line3(&p1, &p2, BLACK);
-	//draw_line2(&p2, &p0, BLACK);
-#endif
 
-#if 0
-	    Point p0 = {-200, -100};
-	    Point p1 = {240, 120};
-	    draw_line3(&p0, &p1, BLACK);
-	    
-	    Point p2 = {-50, -200};
-	    Point p3 = {60, 240};
-	    draw_line3(&p2, &p3, BLACK);
-#endif
-	   /* 
-	   /* 
-	    for ( int x = -240; x <240; x++){
-		    for ( int y = -100; y<120; y++) {
-			    PutPixel(x,y, BLACK);
-		    }
-	    }
-	    */
-
-//            DrawText("Congrats! You created your first window!", 190, 200, 20, LIGHTGRAY);
+        DrawFilledTriangle(&p0, &p1, &p2, (Color){0, 255, 0, 255});
+	    DrawWireframeTriangle(&p0, &p1, &p2, (Color){0, 0, 0, 255});
 
         EndDrawing();
         //----------------------------------------------------------------------------------
